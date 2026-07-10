@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#1a237e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="سپهر">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="msapplication-TileColor" content="#1a237e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+<title>مدیریت ساختمان سپهر</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --primary:#3949ab;--primary-dark:#1a237e;--primary-light:#7986cb;
+  --accent:#00bcd4;--accent2:#ff6f00;
+  --success:#43a047;--danger:#e53935;--warn:#f9a825;
+  --bg:#f0f2f8;--card:#fff;--text:#1a1a2e;--text2:#5c6275;
+  --border:#e0e4f0;--shadow:0 2px 12px rgba(57,73,171,.10);
+  --radius:16px;--radius-sm:10px;
+  --nav-h:64px;--header-h:64px;
+  --font:'Vazirmatn',sans-serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0d0f1a;--card:#181a2e;--text:#e8eaf6;--text2:#9fa8da;--border:#2a2d4a;--shadow:0 2px 16px rgba(0,0,0,.4);}
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;direction:rtl}
+#app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+#header{background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;padding:0 20px;height:var(--header-h);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:100;box-shadow:0 2px 16px rgba(26,35,126,.3)}
+#header .brand{display:flex;align-items:center;gap:12px;min-width:0}
+#header .brand img{width:40px;height:40px;border-radius:10px;object-fit:cover;border:2px solid rgba(255,255,255,.3);flex-shrink:0}
+#header .brand-text{min-width:0}
+#header .brand-name{font-size:20px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+#header .brand-ver{font-size:11px;opacity:.75;margin-top:1px}
+#header nav button{background:rgba(255,255,255,.12);border:none;color:#fff;padding:8px 14px;border-radius:8px;font-family:var(--font);font-size:13px;cursor:pointer;transition:.2s;white-space:nowrap;margin-right:4px}
+#header nav button:hover,#header nav button.active{background:rgba(255,255,255,.28);font-weight:600}
+#main{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px;padding-bottom:calc(var(--nav-h) + 20px)}
+#footer-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--card);border-top:1px solid var(--border);z-index:200;display:none;align-items:stretch;box-shadow:0 -4px 20px rgba(57,73,171,.10)}
+#footer-nav button{flex:1;background:none;border:none;color:var(--text2);font-family:var(--font);font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:.2s;padding:6px 2px}
+#footer-nav button .icon{font-size:22px;line-height:1}
+#footer-nav button.active{color:var(--primary)}
+#footer-nav button.active .icon{transform:scale(1.15)}
+#footer-bar{background:var(--primary-dark);color:rgba(255,255,255,.6);text-align:center;font-size:11px;padding:8px 16px;flex-shrink:0;line-height:1.5}
+#footer-bar span{color:rgba(255,255,255,.85)}
+@media(max-width:768px){
+  #header nav{display:none!important}
+  #footer-nav{display:flex}
+  #main{padding:12px;padding-bottom:calc(var(--nav-h) + 80px)}
+}
+.page{display:none;animation:fadeIn .25s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px;border:1px solid var(--border)}
+.card-sm{padding:14px 16px}
+.dash-top{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+@media(min-width:600px){.dash-top{grid-template-columns:repeat(4,1fr)}}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border:1px solid var(--border);text-align:center;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;opacity:.08}
+.stat-card.blue::before{background:var(--primary)}
+.stat-card.cyan::before{background:var(--accent)}
+.stat-card.green::before{background:var(--success)}
+.stat-card.red::before{background:var(--danger)}
+.stat-card.orange::before{background:var(--accent2)}
+.stat-icon{font-size:24px;margin-bottom:6px}
+.stat-val{font-size:18px;font-weight:800;color:var(--text)}
+.stat-lbl{font-size:11px;color:var(--text2);margin-top:2px}
+.clock-card{background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;border-radius:var(--radius);padding:20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(26,35,126,.3)}
+.clock-time{font-size:32px;font-weight:800;letter-spacing:2px;font-variant-numeric:tabular-nums}
+.clock-date{font-size:14px;opacity:.85;margin-top:4px}
+.clock-meta{font-size:11px;opacity:.6;margin-top:6px}
+.clock-logo{width:80px;height:80px;border-radius:16px;object-fit:cover;border:2px solid rgba(255,255,255,.3)}
+.clock-logo-ph{width:80px;height:80px;border-radius:16px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:36px}
+.warn-banner{background:linear-gradient(135deg,#ff6f00,#ff8f00);color:#fff;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600}
+.chart-wrap{margin-bottom:0}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:110px;padding:0 4px}
+.bar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.bar-item .bar-inner{width:100%;border-radius:6px 6px 0 0;transition:.5s ease;min-height:4px}
+.bar-item .bar-lbl{font-size:9px;color:var(--text2);white-space:nowrap}
+.unit-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-family:var(--font);font-size:12px;color:var(--text2);cursor:pointer;transition:.2s}
+.filter-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.unit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.unit-card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border:2px solid var(--border);transition:.2s;cursor:pointer}
+.unit-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(57,73,171,.15)}
+.unit-card.debtor{border-color:var(--danger);background:rgba(229,57,53,.03)}
+.unit-card.paid{border-color:var(--success);background:rgba(67,160,71,.03)}
+.unit-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.unit-num{font-size:20px;font-weight:800;color:var(--primary)}
+.unit-status{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:700}
+.unit-status.paid{background:#e8f5e9;color:var(--success)}
+.unit-status.debtor{background:#ffebee;color:var(--danger)}
+.unit-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)}
+.unit-row:last-child{border:none}
+.unit-row .lbl{color:var(--text2)}
+.unit-row .val{font-weight:600}
+.unit-row .val.danger{color:var(--danger)}
+.unit-actions{display:flex;gap:8px;margin-top:12px}
+.exp-grid{display:grid;gap:10px}
+.exp-card{background:var(--card);border-radius:var(--radius-sm);padding:14px 16px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.exp-icon{width:40px;height:40px;border-radius:10px;background:rgba(57,73,171,.1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.exp-info{flex:1;min-width:0}
+.exp-title{font-size:14px;font-weight:700}
+.exp-meta{font-size:12px;color:var(--text2);margin-top:2px}
+.exp-amount{font-size:15px;font-weight:800;color:var(--danger);white-space:nowrap}
+@media print{
+  #header,#footer-nav,#footer-bar,#report-controls,.no-print{display:none!important}
+  #main{padding:0!important;overflow:visible!important}
+  body,html{overflow:auto!important;height:auto!important}
+  #app{height:auto!important;overflow:visible!important}
+  .page{display:none!important}
+  #page-report{display:block!important}
+}
+.report-body{max-width:820px;margin:0 auto;background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+.report-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px}
+.report-table th{background:var(--primary);color:#fff;padding:10px 12px;text-align:right;font-weight:600}
+.report-table td{padding:9px 12px;border-bottom:1px solid var(--border)}
+.report-table tr:nth-child(even) td{background:rgba(57,73,171,.03)}
+.report-table .amount{color:var(--danger);font-weight:700}
+.report-table .paid-cell{color:var(--success);font-weight:700}
+.report-footer-boxes{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px}
+.rs-box{flex:1;min-width:130px;border:2px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.rs-val{font-size:18px;font-weight:800}
+.rs-lbl{font-size:12px;color:var(--text2);margin-top:4px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:10px;border:none;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-warn{background:var(--warn);color:#000}
+.btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary)}
+.btn-sm{padding:7px 12px;font-size:12px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.form-control{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:.2s}
+.form-control:focus{border-color:var(--primary)}
+select.form-control option{background:var(--card)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);animation:fadeIn .2s}
+.modal-box{background:var(--card);border-radius:var(--radius);width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .25s}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-head{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-size:17px;font-weight:700}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text2)}
+.modal-body{padding:20px}
+.receipt{background:#fff;color:#000;padding:20px;border-radius:var(--radius);font-size:13px;direction:rtl;max-width:320px;margin:0 auto}
+.receipt-header{text-align:center;border-bottom:2px dashed #ccc;padding-bottom:12px;margin-bottom:12px}
+.receipt-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #ddd}
+.receipt-total{font-weight:800;color:#d32f2f}
+.pay-history{background:rgba(57,73,171,.05);border-radius:var(--radius-sm);padding:12px}
+.pay-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.pay-item:last-child{border:none}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.section-header h2{font-size:18px;font-weight:800}
+#toast{position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%) translateY(20px);background:#323232;color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;z-index:9999;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;max-width:90vw}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(min-width:769px){#toast{bottom:80px}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.contact-hero{background:linear-gradient(135deg,var(--primary-dark),var(--accent));border-radius:var(--radius);padding:32px;text-align:center;color:#fff;margin-bottom:16px}
+.contact-phone{font-size:28px;font-weight:800;letter-spacing:2px;margin:12px 0}
+.contact-btn-a{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--primary-dark);padding:14px 28px;border-radius:40px;font-size:16px;font-weight:700;text-decoration:none}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.badge-danger{background:#ffebee;color:var(--danger)}
+.badge-success{background:#e8f5e9;color:var(--success)}
+.lock-screen{text-align:center;padding:40px 20px}
+.lock-icon{font-size:48px;margin-bottom:12px}
+.statement-block{page-break-inside:avoid;margin-bottom:18px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px}
+@media print{.statement-block{page-break-after:always;border:none}}
+.statement-block:last-child{page-break-after:avoid}
+.wunit-card{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px;text-align:center;transition:.2s}
+.wunit-card:has(input:focus){border-color:var(--primary);background:rgba(57,73,171,.05)}
+.wunit-card .wunit-label{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:5px}
+.wunit-card .wunit-amount{font-size:11px;font-weight:700;color:var(--success);margin-top:4px;min-height:16px}
+.wunit-card .wunit-input{width:100%;border:1.5px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-family:var(--font);font-size:14px;text-align:center;padding:6px 4px;outline:none}
+.wunit-card .wunit-input:focus{border-color:var(--primary)}
+.amount-words{font-size:12px;color:var(--primary);font-weight:600;margin-top:5px;padding:4px 8px;background:rgba(57,73,171,.06);border-radius:6px;display:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div class="brand">
+      <img id="headerLogo" src="" alt="" onerror="this.style.display='none'" style="display:none">
+      <div id="headerLogoPh" style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🏢</div>
+      <div class="brand-text">
+        <div class="brand-name" id="headerBuildingName">مجتمع سپهر</div>
+        <div class="brand-ver" id="headerVersion">v1.0.1</div>
+      </div>
+    </div>
+    <nav>
+      <button onclick="showPage('dashboard')" class="active" id="nav-dashboard">📊 داشبورد</button>
+      <button onclick="showPage('units')" id="nav-units">🏠 واحدها</button>
+      <button onclick="showPage('expenses')" id="nav-expenses">💰 هزینه‌ها</button>
+      <button onclick="showPage('report')" id="nav-report">📑 گزارش</button>
+      <button onclick="showPage('contact')" id="nav-contact">📞 تماس</button>
+      <button onclick="showPage('settings')" id="nav-settings">⚙️ مدیریت</button>
+    </nav>
+  </div>
+
+  <div id="main">
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="clock-card">
+        <div>
+          <div class="clock-time" id="clockTime">--:--:--</div>
+          <div class="clock-date" id="clockDate">در حال بارگذاری...</div>
+          <div class="clock-meta" id="clockMeta"></div>
+        </div>
+        <div>
+          <img id="dashLogo" src="" style="display:none" class="clock-logo" onerror="this.style.display='none'">
+          <div id="dashLogoPh" class="clock-logo-ph">🏢</div>
+        </div>
+      </div>
+      <div id="debtorBanner" class="warn-banner" style="display:none">⚠️ <span id="debtorBannerText"></span></div>
+      <div class="dash-top" id="dashStats"></div>
+      <div class="card chart-wrap">
+        <div style="font-size:14px;font-weight:700;margin-bottom:12px">📊 نمودار مقایسه درآمد و هزینه ماهانه</div>
+        <div class="bar-chart" id="barChart"></div>
+        <div style="display:flex;gap:16px;margin-top:10px;font-size:12px">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:14px;height:14px;background:var(--success);border-radius:3px;display:inline-block"></span>درآمد</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:14px;height:14px;background:var(--danger);border-radius:3px;display:inline-block"></span>هزینه</span>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div style="font-size:14px;font-weight:700;margin-bottom:12px">🔴 واحدهای بدهکار</div>
+        <div id="debtorList"></div>
+      </div>
+    </div>
+
+    <!-- UNITS -->
+    <div class="page" id="page-units">
+      <div class="section-header">
+        <h2>🏠 واحدها</h2>
+        <button class="btn btn-primary btn-sm" onclick="openPayModal(null)">💳 ثبت پرداخت</button>
+      </div>
+      <div class="unit-filters">
+        <button class="filter-btn active" onclick="filterUnits('all',this)">همه</button>
+        <button class="filter-btn" onclick="filterUnits('debtor',this)">بدهکار</button>
+        <button class="filter-btn" onclick="filterUnits('paid',this)">تسویه‌شده</button>
+        <button class="filter-btn" onclick="filterUnits('sort-num',this)">🔢 شماره</button>
+        <button class="filter-btn" onclick="filterUnits('sort-debt',this)">💸 بیشترین بدهی</button>
+      </div>
+      <div class="unit-grid" id="unitGrid"></div>
+    </div>
+
+    <!-- EXPENSES -->
+    <div class="page" id="page-expenses">
+      <div class="section-header">
+        <h2>💰 هزینه‌ها</h2>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="showWaterModal()">💧 محاسبه قبض آب</button>
+          <button class="btn btn-danger btn-sm" onclick="showAddExpenseModal()">➕ ثبت هزینه</button>
+        </div>
+      </div>
+      <!-- water summary panel -->
+      <div id="waterSummaryPanel" style="display:none" class="card" style="border:2px solid #0288d1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div style="font-size:15px;font-weight:800;color:#0288d1">💧 آخرین محاسبه قبض آب</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary btn-sm" onclick="showWaterModal()">✏️ ویرایش</button>
+            <button class="btn btn-danger btn-sm" onclick="clearWaterCalc()">🗑️ حذف</button>
+          </div>
+        </div>
+        <div id="waterSummaryContent"></div>
+      </div>
+      <div class="exp-grid" id="expGrid"><div style="text-align:center;padding:40px;color:var(--text2)">هیچ هزینه‌ای ثبت نشده است</div></div>
+    </div>
+
+    <!-- REPORT -->
+    <div class="page" id="page-report">
+      <div class="section-header no-print" id="report-controls">
+        <h2>📑 گزارش کامل A4</h2>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ چاپ / PDF</button>
+          <button class="btn btn-outline btn-sm" onclick="toggleStatements()" id="toggleStatementsBtn">🧾 صورتحساب کلی واحدها</button>
+        </div>
+      </div>
+      <div class="report-body" id="reportBody"></div>
+      <div class="report-body" id="statementsBody" style="display:none;margin-top:20px"></div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="page" id="page-contact">
+      <div class="contact-hero">
+        <div style="font-size:40px;margin-bottom:8px">📞</div>
+        <div style="font-size:20px;font-weight:700">تماس مستقیم با مدیریت</div>
+        <div class="contact-phone">۰۹۱۲۶۶۱۱۴۸۱</div>
+        <a href="tel:09126611481" class="contact-btn-a">📱 تماس با یک کلیک</a>
+      </div>
+      <div class="card">
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px">ساعات پاسخگویی</div>
+        <div style="font-size:13px;color:var(--text2);line-height:2.2">
+          📅 شنبه تا پنجشنبه: ۸ صبح تا ۸ شب<br>📅 جمعه: ۱۰ صبح تا ۵ بعد از ظهر
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="section-header"><h2>⚙️ مدیریت</h2></div>
+
+      <div class="card" id="settingsLock">
+        <div class="lock-screen">
+          <div class="lock-icon">🔒</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:6px">بخش مدیریت قفل است</div>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:18px">برای دسترسی، رمز عبور را وارد کنید</div>
+          <div class="form-group" style="max-width:280px;margin:0 auto 14px">
+            <input type="password" class="form-control" id="settingsPassInput" placeholder="رمز عبور" onkeydown="if(event.key==='Enter')checkSettingsPassword()">
+          </div>
+          <button class="btn btn-primary" onclick="checkSettingsPassword()">🔓 ورود</button>
+          <div id="settingsPassError" style="color:var(--danger);font-size:13px;margin-top:10px;display:none">رمز عبور اشتباه است</div>
+        </div>
+      </div>
+
+      <div id="settingsContent" style="display:none">
+      <div class="card">
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px">🏢 اطلاعات مجتمع</div>
+        <div class="form-group"><label>نام مجتمع</label><input type="text" class="form-control" id="setBuildingName" placeholder="مثال: مجتمع سپهر"></div>
+        <div class="form-group"><label>لوگو / تصویر مجتمع</label><input type="file" class="form-control" id="setLogo" accept="image/*" onchange="handleLogoUpload(this)"></div>
+        <button class="btn btn-primary" onclick="saveBuildingInfo()">💾 ذخیره اطلاعات مجتمع</button>
+      </div>
+      <div class="card">
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px">🏠 تنظیمات واحدها</div>
+        <div class="form-group"><label>مبلغ شارژ پیش‌فرض (تومان)</label>
+          <input type="number" class="form-control" id="setDefaultCharge" placeholder="500000" oninput="showWords(this,'setDefaultChargeWords')">
+          <div class="amount-words" id="setDefaultChargeWords"></div>
+        </div>
+        <div class="form-group"><label>تعداد واحدها (۱ تا ۳۰)</label><input type="number" class="form-control" id="setUnitCount" min="1" max="30"></div>
+        <button class="btn btn-primary" onclick="saveUnitSettings()">💾 ذخیره تنظیمات واحدها</button>
+      </div>
+      <div class="card">
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px">⚡ عملیات</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-success" onclick="exportBackup()">📤 خروجی Backup</button>
+          <button class="btn btn-outline" onclick="document.getElementById('importBackup').click()">📥 بازیابی Backup</button>
+          <input type="file" id="importBackup" style="display:none" accept=".json" onchange="importBackupFn(this)">
+          <button class="btn btn-primary" onclick="exportHTML()">💾 ذخیره به HTML</button>
+          <button class="btn btn-warn" onclick="settleAllDebts()">✅ تسویه همه بدهی‌ها</button>
+          <button class="btn btn-danger" onclick="clearAllData()">🗑️ پاک کردن همه</button>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:15px;font-weight:700;margin-bottom:6px">🏦 تنظیم موجودی صندوق</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:14px">برای اضافه یا کم کردن موجودی صندوق (مثلاً موجودی اولیه یا برداشت دستی) مبلغ را وارد کنید. مقدار منفی یعنی کسر از صندوق.</div>
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <div class="form-group" style="flex:1;margin:0">
+            <label>مبلغ تعدیل (تومان) — منفی برای کسر</label>
+            <input type="number" class="form-control" id="setFundAdj" placeholder="مثال: 1000000 یا -500000">
+          </div>
+          <button class="btn btn-primary" style="white-space:nowrap" onclick="saveFundAdjustment()">💾 اعمال</button>
+        </div>
+        <div id="fundAdjCurrent" style="font-size:13px;color:var(--text2);margin-top:10px"></div>
+      </div>
+      <div class="card">
+        <button class="btn btn-outline" style="width:100%" onclick="lockSettings()">🔒 قفل کردن بخش مدیریت</button>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-nav">
+    <button onclick="showPage('dashboard')" id="fnav-dashboard" class="active"><span class="icon">📊</span><span>داشبورد</span></button>
+    <button onclick="showPage('units')" id="fnav-units"><span class="icon">🏠</span><span>واحدها</span></button>
+    <button onclick="showPage('expenses')" id="fnav-expenses"><span class="icon">💰</span><span>هزینه‌ها</span></button>
+    <button onclick="showPage('contact')" id="fnav-contact"><span class="icon">📞</span><span>تماس</span></button>
+    <button onclick="showPage('settings')" id="fnav-settings"><span class="icon">⚙️</span><span>مدیریت</span></button>
+  </div>
+
+  <div id="footer-bar">
+    تمامی حقوق برای مجتمع <span id="footerBuildingName">سپهر</span> محفوظ است - Designed by Alireza Rahimi
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- UNIT MODAL -->
+<div class="modal-overlay" id="unitModal" style="display:none" onclick="if(event.target===this)closeModal('unitModal')">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="unitModalTitle">واحد</h3><button class="modal-close" onclick="closeModal('unitModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>مالک</label><input type="text" class="form-control" id="uOwner" placeholder="نام مالک"></div>
+      <div class="form-group"><label>مستاجر</label><input type="text" class="form-control" id="uTenant" placeholder="نام مستاجر (اختیاری)"></div>
+      <div class="form-group"><label>شماره تماس</label><input type="tel" class="form-control" id="uPhone" placeholder="09xxxxxxxxx"></div>
+      <div class="form-group"><label>مبلغ شارژ ماهانه (تومان)</label>
+        <input type="number" class="form-control" id="uCharge" oninput="showWords(this,'uChargeWords')">
+        <div class="amount-words" id="uChargeWords"></div>
+      </div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text2)">📋 سابقه پرداخت‌ها</div>
+      <div id="uPayHistory" class="pay-history" style="margin-bottom:14px;max-height:200px;overflow-y:auto"></div>
+      <button class="btn btn-primary" style="width:100%" onclick="saveUnit()">💾 ذخیره اطلاعات واحد</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="paymentModal" style="display:none" onclick="if(event.target===this)closeModal('paymentModal')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>💳 ثبت پرداخت</h3><button class="modal-close" onclick="closeModal('paymentModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>شماره واحد</label>
+        <select class="form-control" id="payUnit" onchange="onPayUnitChange()"></select>
+      </div>
+      <div id="payUnitInfo" style="display:none;background:rgba(57,73,171,.07);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;line-height:2">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">شارژ ماهانه:</span><span id="payInfoCharge" style="font-weight:700"></span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">جمع پرداخت‌شده:</span><span id="payInfoPaid" style="font-weight:700;color:var(--success)"></span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">مانده بدهی:</span><span id="payInfoDebt" style="font-weight:700;color:var(--danger)"></span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">شماره تماس:</span><span id="payInfoPhone" style="font-weight:700"></span></div>
+      </div>
+      <div class="form-group"><label>ماه</label>
+        <select class="form-control" id="payMonth">
+          <option>فروردین</option><option>اردیبهشت</option><option>خرداد</option><option>تیر</option>
+          <option>مرداد</option><option>شهریور</option><option>مهر</option><option>آبان</option>
+          <option>آذر</option><option>دی</option><option>بهمن</option><option>اسفند</option>
+        </select>
+      </div>
+      <div class="form-group"><label>سال</label><input type="number" class="form-control" id="payYear" value="1404"></div>
+      <div class="form-group">
+        <label>مبلغ پرداختی (تومان)</label>
+        <input type="number" class="form-control" id="payAmount" placeholder="مبلغ را وارد کنید" oninput="onPayAmountInput()">
+        <div id="payAmountWords" style="font-size:12px;color:var(--primary);font-weight:600;margin-top:5px;min-height:18px;padding:4px 8px;background:rgba(57,73,171,.06);border-radius:6px;display:none"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="btn btn-warn btn-sm" onclick="setPayAmountToDebt()" style="flex:1">📌 ثبت مانده بدهی</button>
+        <button class="btn btn-outline btn-sm" onclick="setPayAmountToCharge()" style="flex:1">📋 ثبت یک ماه شارژ</button>
+      </div>
+      <div class="form-group"><label>توضیحات</label><input type="text" class="form-control" id="payNote" placeholder="اختیاری"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-success" style="flex:1" onclick="registerPayment(false)">✅ ثبت</button>
+        <button class="btn btn-primary" style="flex:1" onclick="registerPayment(true)">🧾 ثبت + رسید</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div class="modal-overlay" id="receiptModal" style="display:none" onclick="if(event.target===this)closeModal('receiptModal')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>🧾 رسید پرداخت</h3><button class="modal-close" onclick="closeModal('receiptModal')">✕</button></div>
+    <div class="modal-body">
+      <div id="receiptContent"></div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+        <button class="btn btn-primary" style="flex:1" onclick="window.print()">🖨️ چاپ رسید</button>
+        <button class="btn btn-success" style="flex:1" id="smsSendBtn" onclick="sendSmsReceipt()">📱 ارسال SMS</button>
+      </div>
+      <div id="smsPreview" style="display:none;margin-top:12px;background:rgba(67,160,71,.08);border:1.5px solid var(--success);border-radius:10px;padding:12px;font-size:12px;line-height:1.8;direction:rtl"></div>
+    </div>
+  </div>
+</div>
+
+<!-- WATER CALC MODAL -->
+<div class="modal-overlay" id="waterModal" style="display:none" onclick="if(event.target===this)closeModal('waterModal')">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-head">
+      <h3>💧 محاسبه سهم قبض آب هر واحد</h3>
+      <button class="modal-close" onclick="closeModal('waterModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:rgba(2,136,209,.08);border:1px solid rgba(2,136,209,.25);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#0277bd;line-height:1.7">
+        ۱. مبلغ کل قبض آب را وارد کنید<br>
+        ۲. مجموع متر مکعب مصرف کل ساختمان را وارد کنید<br>
+        ۳. برای هر واحد مصرف آن را وارد کنید → سیستم سهم تومانی محاسبه می‌کند<br>
+        ۴. می‌توانید مبلغ را به شارژ ماهانه هر واحد اضافه کنید
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="form-group" style="margin:0">
+          <label>💰 مبلغ کل قبض (تومان)</label>
+          <input type="number" class="form-control" id="wTotalAmount" placeholder="مثال: 5000000" oninput="calcWater();showWords(this,'wTotalAmountWords')">
+          <div class="amount-words" id="wTotalAmountWords"></div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>📊 کل مصرف ساختمان (م³)</label>
+          <input type="number" class="form-control" id="wTotalM3" placeholder="مثال: 100" oninput="calcWater()">
+        </div>
+      </div>
+      <div class="form-group" style="background:rgba(255,152,0,.08);border:1.5px solid rgba(255,152,0,.3);border-radius:10px;padding:12px;margin-bottom:16px">
+        <label style="color:#e65100">🏛️ مصرف مشاعات (م³) — سهم مساوی بین واحدها</label>
+        <input type="number" class="form-control" id="wCommonM3" placeholder="مصرف مشاعات مثال: 10" oninput="calcWater()" style="border-color:rgba(255,152,0,.5)">
+        <div id="wCommonInfo" style="font-size:12px;color:#e65100;margin-top:6px;display:none"></div>
+      </div>
+      <div id="wRateDisplay" style="text-align:center;background:var(--primary);color:#fff;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:700;margin-bottom:14px;display:none">
+        نرخ هر متر مکعب: <span id="wRateVal">0</span> تومان
+      </div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text2)">🏠 مصرف هر واحد (متر مکعب):</div>
+      <div id="wUnitsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;max-height:280px;overflow-y:auto;margin-bottom:16px"></div>
+      <div id="wTotalCheck" style="display:none;margin-bottom:14px;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600"></div>
+      <div id="wResultTable" style="display:none;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px">📋 نتیجه محاسبه:</div>
+        <div id="wResultContent"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" style="flex:1" onclick="saveWaterCalc(false)">💾 ذخیره محاسبه</button>
+        <button class="btn btn-success" style="flex:1" onclick="saveWaterCalc(true)">➕ ذخیره + اضافه به شارژ واحدها</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="expenseModal" style="display:none" onclick="if(event.target===this)closeModal('expenseModal')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>➕ ثبت هزینه جدید</h3><button class="modal-close" onclick="closeModal('expenseModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>عنوان هزینه</label>
+        <select class="form-control" id="expTitle" onchange="toggleCustomExp(this)">
+          <option value="قبض آب">💧 قبض آب</option>
+          <option value="قبض گاز">🔥 قبض گاز</option>
+          <option value="قبض برق مشترک">💡 قبض برق مشترک</option>
+          <option value="هزینه نظافت">🧹 هزینه نظافت</option>
+          <option value="تعمیرات و نگهداری">🔧 تعمیرات و نگهداری</option>
+          <option value="حقوق سرایدار">👷 حقوق سرایدار</option>
+          <option value="باغبانی">🌱 باغبانی</option>
+          <option value="بیمه ساختمان">🛡️ بیمه ساختمان</option>
+          <option value="هزینه آسانسور">🛗 هزینه آسانسور</option>
+          <option value="custom">✏️ سایر...</option>
+        </select>
+        <input type="text" class="form-control" id="expTitleCustom" placeholder="عنوان هزینه" style="display:none;margin-top:8px">
+      </div>
+      <div class="form-group"><label>مبلغ (تومان)</label>
+        <input type="number" class="form-control" id="expAmount" placeholder="مبلغ" oninput="showWords(this,'expAmountWords')">
+        <div class="amount-words" id="expAmountWords"></div>
+      </div>
+      <div class="form-group"><label>تاریخ</label><input type="text" class="form-control" id="expDate"></div>
+      <div class="form-group"><label>توضیحات</label><input type="text" class="form-control" id="expDesc" placeholder="اختیاری"></div>
+      <button class="btn btn-danger" style="width:100%" onclick="saveExpense()">💾 ثبت هزینه</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ DATA ============
+let DB={
+  version:'1.0.1',updateDate:'1405/04/08',
+  buildingName:'مجتمع سپهر',logo:'',
+  defaultCharge:500000,unitCount:15,
+  units:[],expenses:[]
+};
+
+function loadDB(){
+  const s=localStorage.getItem('buildingDB_v2');
+  if(s){try{DB=JSON.parse(s)}catch(e){}}
+  if(!DB.units||DB.units.length===0) initUnits();
+}
+
+function saveDB(){
+  const p=DB.version.split('.').map(Number);
+  p[2]++;DB.version=p.join('.');
+  DB.updateDate=getShamsiDate();
+  localStorage.setItem('buildingDB_v2',JSON.stringify(DB));
+  document.getElementById('headerVersion').textContent='v'+DB.version;
+  updateClockMeta();
+}
+
+function initUnits(){
+  DB.units=[];
+  for(let i=1;i<=DB.unitCount;i++){
+    DB.units.push({id:i,owner:'',tenant:'',phone:'',charge:DB.defaultCharge,payments:[]});
+  }
+}
+
+// ============ SHAMSI ============
+function toShamsi(gy,gm,gd){
+  function div(a,b){return Math.floor(a/b);}
+  const gDm=[0,31,59,90,120,151,181,212,243,273,304,334];
+  let jy=(gy<=1600)?0:979;
+  gy-=(gy<=1600)?621:1600;
+  const gy2=(gm>2)?(gy+1):gy;
+  let days=(365*gy)+div(gy2+3,4)-div(gy2+99,100)+div(gy2+399,400)-80+gd+gDm[gm-1];
+  jy+=33*div(days,12053);days%=12053;
+  jy+=4*div(days,1461);days%=1461;
+  if(days>365){jy+=div(days-1,365);days=(days-1)%365;}
+  let jm,jd;
+  if(days<186){jm=1+div(days,31);jd=1+(days%31);}
+  else{jm=7+div(days-186,30);jd=1+((days-186)%30);}
+  return{y:jy,m:jm,d:jd};
+}
+
+function getShamsiDate(){
+  const n=new Date();
+  const s=toShamsi(n.getFullYear(),n.getMonth()+1,n.getDate());
+  return `${s.y}/${String(s.m).padStart(2,'0')}/${String(s.d).padStart(2,'0')}`;
+}
+
+function getShamsiDateFull(){
+  const n=new Date();
+  const s=toShamsi(n.getFullYear(),n.getMonth()+1,n.getDate());
+  const months=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  const days=['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+  return `${days[n.getDay()]} ${s.d} ${months[s.m-1]} ${s.y}`;
+}
+
+// ============ CLOCK ============
+function updateClock(){
+  const n=new Date();
+  const pad=v=>String(v).padStart(2,'0');
+  const el=document.getElementById('clockTime');
+  if(el) el.textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+  const de=document.getElementById('clockDate');
+  if(de) de.textContent=getShamsiDateFull();
+}
+function updateClockMeta(){
+  const el=document.getElementById('clockMeta');
+  if(el) el.textContent=`Version ${DB.version} | آخرین بروزرسانی: ${DB.updateDate}`;
+}
+
+// ============ NAV ============
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById('page-'+name);
+  if(pg) pg.classList.add('active');
+  ['dashboard','units','expenses','report','contact','settings'].forEach(n=>{
+    const nb=document.getElementById('nav-'+n);
+    const fb=document.getElementById('fnav-'+n);
+    if(nb) nb.classList.toggle('active',n===name);
+    if(fb) fb.classList.toggle('active',n===name);
+  });
+  const m=document.getElementById('main');
+  if(m) m.scrollTo(0,0);
+  if(name==='dashboard') renderDashboard();
+  if(name==='units') renderUnits();
+  if(name==='expenses') {renderExpenses();renderWaterSummary();}
+  if(name==='report') renderReport();
+  if(name==='settings') {
+    // re-lock every time settings page is entered fresh (not just on save) unless already unlocked this session
+    if(settingsUnlocked){
+      document.getElementById('settingsLock').style.display='none';
+      document.getElementById('settingsContent').style.display='block';
+    } else {
+      document.getElementById('settingsLock').style.display='block';
+      document.getElementById('settingsContent').style.display='none';
+    }
+    loadSettingsForm();
+  }
+}
+
+// ============ CALCS ============
+function getUnitTotalPaid(u){return(u.payments||[]).reduce((s,p)=>s+Number(p.amount||0),0)}
+function getUnitDebt(u){return Math.max(0,Number(u.charge||0)-getUnitTotalPaid(u))}
+function numFmt(n){
+  const num=Number(n||0);
+  return num.toLocaleString('fa-IR',{minimumFractionDigits:0,maximumFractionDigits:0});
+}
+
+// ============ DASHBOARD ============
+function renderDashboard(){
+  const units=DB.units||[];
+  const totalIncome=units.reduce((s,u)=>s+getUnitTotalPaid(u),0);
+  const totalExpense=(DB.expenses||[]).reduce((s,e)=>s+Number(e.amount||0),0);
+  const debtors=units.filter(u=>getUnitDebt(u)>0);
+  const fundAdj=Number(DB.fundAdjustment||0);
+  const fund=totalIncome-totalExpense+fundAdj;
+
+  document.getElementById('dashStats').innerHTML=`
+    <div class="stat-card blue"><div class="stat-icon">🏠</div><div class="stat-val">${numFmt(units.length)}</div><div class="stat-lbl">واحدها</div></div>
+    <div class="stat-card red"><div class="stat-icon">⚠️</div><div class="stat-val">${numFmt(debtors.length)}</div><div class="stat-lbl">بدهکار</div></div>
+    <div class="stat-card green"><div class="stat-icon">💵</div><div class="stat-val">${numFmt(totalIncome)}</div><div class="stat-lbl">دریافتی (تومان)</div></div>
+    <div class="stat-card orange"><div class="stat-icon">💸</div><div class="stat-val">${numFmt(totalExpense)}</div><div class="stat-lbl">هزینه (تومان)</div></div>
+    <div class="stat-card cyan" style="grid-column:span 2"><div class="stat-icon">${fund>=0?'🏦':'🔴'}</div><div class="stat-val" style="color:${fund>=0?'var(--success)':'var(--danger)'}">${numFmt(fund)}</div><div class="stat-lbl">موجودی صندوق (تومان)</div></div>
+  `;
+
+  const banner=document.getElementById('debtorBanner');
+  if(debtors.length>0){banner.style.display='flex';document.getElementById('debtorBannerText').textContent=`${debtors.length} واحد بدهکار دارید`;}
+  else banner.style.display='none';
+
+  renderChart(units);
+
+  const dl=document.getElementById('debtorList');
+  if(debtors.length===0){
+    dl.innerHTML='<div style="text-align:center;padding:20px;color:var(--success);font-weight:700">✅ همه واحدها تسویه کامل دارند</div>';
+  } else {
+    dl.innerHTML=debtors.sort((a,b)=>getUnitDebt(b)-getUnitDebt(a)).map(u=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><span style="font-weight:700;color:var(--primary)">واحد ${u.id}</span>${u.owner?' — '+u.owner:''}</div>
+        <span class="badge badge-danger">${numFmt(getUnitDebt(u))} ت</span>
+      </div>`).join('');
+  }
+  refreshLogos();
+}
+
+function renderChart(units){
+  const mNames=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  const mShort=['فر','ار','خر','تیر','مر','شه','مه','آب','آذ','دی','به','اس'];
+  const inc=new Array(12).fill(0);
+  const exp=new Array(12).fill(0);
+  units.forEach(u=>(u.payments||[]).forEach(p=>{
+    const idx=mNames.indexOf(p.month||'');
+    if(idx>=0) inc[idx]+=Number(p.amount||0);
+  }));
+  (DB.expenses||[]).forEach(e=>{
+    const parts=(e.date||'').split('/');
+    if(parts.length>=2){const m=parseInt(parts[1])-1;if(m>=0&&m<12) exp[m]+=Number(e.amount||0);}
+  });
+  const maxVal=Math.max(...inc,...exp,1);
+  document.getElementById('barChart').innerHTML=mShort.map((m,i)=>{
+    const ih=Math.round((inc[i]/maxVal)*90);
+    const eh=Math.round((exp[i]/maxVal)*90);
+    return `<div class="bar-item">
+      <div style="display:flex;align-items:flex-end;gap:2px;height:90px">
+        <div class="bar-inner" style="width:10px;height:${Math.max(ih,2)}px;background:var(--success)"></div>
+        <div class="bar-inner" style="width:10px;height:${Math.max(eh,2)}px;background:var(--danger)"></div>
+      </div>
+      <div class="bar-lbl">${m}</div>
+    </div>`;
+  }).join('');
+}
+
+function refreshLogos(){
+  const logo=DB.logo;
+  const hL=document.getElementById('headerLogo');
+  const hP=document.getElementById('headerLogoPh');
+  const dL=document.getElementById('dashLogo');
+  const dP=document.getElementById('dashLogoPh');
+  if(logo){
+    if(hL){hL.src=logo;hL.style.display='block';}
+    if(hP) hP.style.display='none';
+    if(dL){dL.src=logo;dL.style.display='block';}
+    if(dP) dP.style.display='none';
+  } else {
+    if(hL) hL.style.display='none';
+    if(hP) hP.style.display='flex';
+    if(dL) dL.style.display='none';
+    if(dP) dP.style.display='flex';
+  }
+  document.getElementById('headerBuildingName').textContent=DB.buildingName||'مجتمع سپهر';
+  document.getElementById('headerVersion').textContent='v'+DB.version;
+  const fb=document.getElementById('footerBuildingName');
+  if(fb) fb.textContent=DB.buildingName||'سپهر';
+  updateClockMeta();
+}
+
+// ============ UNITS ============
+let unitFilter='all';
+function filterUnits(f,btn){
+  unitFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderUnits();
+}
+
+function renderUnits(){
+  const grid=document.getElementById('unitGrid');
+  let units=[...DB.units];
+  if(unitFilter==='debtor') units=units.filter(u=>getUnitDebt(u)>0);
+  else if(unitFilter==='paid') units=units.filter(u=>getUnitDebt(u)===0);
+  else if(unitFilter==='sort-debt') units.sort((a,b)=>getUnitDebt(b)-getUnitDebt(a));
+  else if(unitFilter==='sort-num') units.sort((a,b)=>a.id-b.id);
+
+  if(units.length===0){grid.innerHTML='<div style="text-align:center;padding:40px;color:var(--text2)">واحدی یافت نشد</div>';return;}
+  grid.innerHTML=units.map(u=>{
+    const debt=getUnitDebt(u);
+    const paid=getUnitTotalPaid(u);
+    const cls=debt>0?'debtor':(paid>0?'paid':'');
+    return `<div class="unit-card ${cls}" onclick="openUnitModal(${u.id})">
+      <div class="unit-header">
+        <div class="unit-num">واحد ${u.id}</div>
+        <span class="unit-status ${debt>0?'debtor':'paid'}">${debt>0?'بدهکار':'تسویه'}</span>
+      </div>
+      <div class="unit-row"><span class="lbl">مالک</span><span class="val">${u.owner||'—'}</span></div>
+      <div class="unit-row"><span class="lbl">مستاجر</span><span class="val">${u.tenant||'—'}</span></div>
+      <div class="unit-row"><span class="lbl">تماس</span><span class="val">${u.phone||'—'}</span></div>
+      <div class="unit-row"><span class="lbl">شارژ ماهانه</span><span class="val">${numFmt(u.charge)} ت</span></div>
+      <div class="unit-row"><span class="lbl">پرداختی کل</span><span class="val" style="color:var(--success)">${numFmt(paid)} ت</span></div>
+      <div class="unit-row"><span class="lbl">مانده بدهی</span><span class="val ${debt>0?'danger':''}">${numFmt(debt)} ت</span></div>
+      <div class="unit-actions">
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openPayModal(${u.id})">💳 پرداخت</button>
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showReceiptForUnit(${u.id})">🧾 رسید</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============ UNIT MODAL ============
+let editUnitId=null;
+function openUnitModal(id){
+  const u=DB.units.find(x=>x.id===id);if(!u) return;
+  editUnitId=id;
+  document.getElementById('unitModalTitle').textContent='ویرایش واحد '+id;
+  document.getElementById('uOwner').value=u.owner||'';
+  document.getElementById('uTenant').value=u.tenant||'';
+  document.getElementById('uPhone').value=u.phone||'';
+  document.getElementById('uCharge').value=u.charge||DB.defaultCharge;
+  const hist=document.getElementById('uPayHistory');
+  const payments=u.payments||[];
+  if(payments.length===0){
+    hist.innerHTML='<div style="text-align:center;color:var(--text2);font-size:12px;padding:8px">هیچ پرداختی ثبت نشده</div>';
+  } else {
+    hist.innerHTML=payments.map((p,i)=>`
+      <div class="pay-item">
+        <div><div style="font-weight:600">${p.month||''} ${p.year||''}</div><div style="font-size:11px;color:var(--text2)">${p.date||''}${p.note?' — '+p.note:''}</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="color:var(--success);font-weight:700">${numFmt(p.amount)} ت</span>
+          <button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:18px;line-height:1" onclick="deletePayment(${id},${i})">✕</button>
+        </div>
+      </div>`).join('');
+  }
+  document.getElementById('unitModal').style.display='flex';
+}
+
+function deletePayment(uid,idx){
+  const u=DB.units.find(x=>x.id===uid);if(!u) return;
+  u.payments.splice(idx,1);saveDB();openUnitModal(uid);showToast('پرداخت حذف شد');
+}
+
+function saveUnit(){
+  const u=DB.units.find(x=>x.id===editUnitId);if(!u) return;
+  u.owner=document.getElementById('uOwner').value;
+  u.tenant=document.getElementById('uTenant').value;
+  u.phone=document.getElementById('uPhone').value;
+  u.charge=Number(document.getElementById('uCharge').value)||DB.defaultCharge;
+  saveDB();closeModal('unitModal');renderUnits();showToast('واحد '+editUnitId+' ذخیره شد');
+}
+
+// ============ PAYMENT ============
+// ============ NUMBER TO PERSIAN WORDS ============
+function numToWords(n){
+  n=Math.round(Number(n)||0);
+  if(n===0) return 'صفر';
+  if(n<0) return 'منفی '+numToWords(-n);
+  const ones=['','یک','دو','سه','چهار','پنج','شش','هفت','هشت','نه','ده','یازده','دوازده','سیزده','چهارده','پانزده','شانزده','هفده','هجده','نوزده'];
+  const tens=['','','بیست','سی','چهل','پنجاه','شصت','هفتاد','هشتاد','نود'];
+  const scales=['','هزار','میلیون','میلیارد','تریلیون'];
+  function group(n){
+    let r='';
+    const h=Math.floor(n/100);
+    const rem=n%100;
+    if(h>0) r+=['','صد','دویست','سیصد','چهارصد','پانصد','ششصد','هفتصد','هشتصد','نهصد'][h];
+    if(rem>0){
+      if(r) r+=' و ';
+      if(rem<20) r+=ones[rem];
+      else{r+=tens[Math.floor(rem/10)];if(rem%10) r+=' و '+ones[rem%10];}
+    }
+    return r;
+  }
+  let parts=[];let num=n;let sc=0;
+  while(num>0){
+    const g=num%1000;
+    if(g!==0) parts.unshift(group(g)+(sc>0?' '+scales[sc]:''));
+    num=Math.floor(num/1000);sc++;
+  }
+  return parts.join(' و ')+' تومان';
+}
+
+function onPayAmountInput(){
+  const val=Number(document.getElementById('payAmount').value)||0;
+  const el=document.getElementById('payAmountWords');
+  if(val>0){el.style.display='block';el.textContent=numToWords(val);}
+  else el.style.display='none';
+}
+
+function showWords(input,targetId){
+  const val=Number(input.value)||0;
+  const el=document.getElementById(targetId);
+  if(!el) return;
+  if(val>0){el.style.display='block';el.textContent=numToWords(val);}
+  else el.style.display='none';
+}
+
+function onPayUnitChange(){
+  const unitId=Number(document.getElementById('payUnit').value);
+  const u=DB.units.find(x=>x.id===unitId);
+  if(!u) return;
+  const debt=getUnitDebt(u);
+  const paid=getUnitTotalPaid(u);
+  document.getElementById('payInfoCharge').textContent=numFmt(u.charge)+' تومان';
+  document.getElementById('payInfoPaid').textContent=numFmt(paid)+' تومان';
+  document.getElementById('payInfoDebt').textContent=numFmt(debt)+' تومان';
+  document.getElementById('payInfoPhone').textContent=u.phone||'—';
+  document.getElementById('payUnitInfo').style.display='block';
+  // auto-fill with debt if any
+  if(debt>0){
+    document.getElementById('payAmount').value=debt;
+    onPayAmountInput();
+  } else {
+    document.getElementById('payAmount').value=u.charge;
+    onPayAmountInput();
+  }
+}
+
+function setPayAmountToDebt(){
+  const unitId=Number(document.getElementById('payUnit').value);
+  const u=DB.units.find(x=>x.id===unitId);if(!u) return;
+  const debt=getUnitDebt(u);
+  document.getElementById('payAmount').value=debt>0?debt:u.charge;
+  onPayAmountInput();
+}
+
+function setPayAmountToCharge(){
+  const unitId=Number(document.getElementById('payUnit').value);
+  const u=DB.units.find(x=>x.id===unitId);if(!u) return;
+  document.getElementById('payAmount').value=u.charge;
+  onPayAmountInput();
+}
+
+function openPayModal(unitId){
+  const sel=document.getElementById('payUnit');
+  sel.innerHTML=DB.units.map(u=>`<option value="${u.id}"${u.id===unitId?' selected':''}>${u.id} — ${u.owner||'بدون مالک'} (بدهی: ${numFmt(getUnitDebt(u))} ت)</option>`).join('');
+  const n=new Date();const s=toShamsi(n.getFullYear(),n.getMonth()+1,n.getDate());
+  document.getElementById('payYear').value=s.y;
+  document.getElementById('payMonth').selectedIndex=s.m-1;
+  document.getElementById('payNote').value='';
+  document.getElementById('payAmountWords').style.display='none';
+  document.getElementById('paymentModal').style.display='flex';
+  // trigger unit info display
+  if(unitId) onPayUnitChange();
+  else{
+    // default to first unit
+    onPayUnitChange();
+  }
+}
+
+let lastPaymentData=null;
+function registerPayment(withReceipt){
+  const unitId=Number(document.getElementById('payUnit').value);
+  const month=document.getElementById('payMonth').value;
+  const year=document.getElementById('payYear').value;
+  const amount=Number(document.getElementById('payAmount').value);
+  const note=document.getElementById('payNote').value;
+  if(!amount){showToast('مبلغ پرداختی را وارد کنید');return;}
+  const u=DB.units.find(x=>x.id===unitId);if(!u) return;
+  if(!u.payments) u.payments=[];
+  const pay={month,year,amount,note,date:getShamsiDate(),id:Date.now()};
+  u.payments.push(pay);
+  saveDB();closeModal('paymentModal');renderUnits();renderDashboard();
+  showToast(`پرداخت ${numFmt(amount)} ت برای واحد ${unitId} ثبت شد`);
+  if(withReceipt) showReceiptModal(unitId,pay);
+}
+
+function showReceiptModal(unitId,pay){
+  currentReceiptUnitId=unitId;
+  currentReceiptPayment=pay||null;
+  document.getElementById('smsPreview').style.display='none';
+  const u=DB.units.find(x=>x.id===unitId);if(!u) return;
+  document.getElementById('receiptContent').innerHTML=`<div class="receipt">
+    <div class="receipt-header">
+      <div style="font-size:18px;font-weight:800">${DB.buildingName||'مجتمع سپهر'}</div>
+      <div style="font-size:12px;color:#666;margin-top:4px">رسید پرداخت شارژ</div>
+    </div>
+    <div class="receipt-row"><span>شماره واحد</span><span>${unitId}</span></div>
+    <div class="receipt-row"><span>مالک</span><span>${u.owner||'—'}</span></div>
+    <div class="receipt-row"><span>ماه شارژ</span><span>${pay.month} ${pay.year}</span></div>
+    <div class="receipt-row"><span>تاریخ پرداخت</span><span>${pay.date}</span></div>
+    ${pay.note?`<div class="receipt-row"><span>توضیحات</span><span>${pay.note}</span></div>`:''}
+    <div class="receipt-row receipt-total"><span>مبلغ پرداختی</span><span>${numFmt(pay.amount)} تومان</span></div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:#888">با تشکر از پرداخت به موقع</div>
+  </div>`;
+  document.getElementById('receiptModal').style.display='flex';
+}
+
+function showReceiptForUnit(unitId){
+  currentReceiptUnitId=unitId;
+  currentReceiptPayment=null;
+  document.getElementById('smsPreview').style.display='none';
+  const u=DB.units.find(x=>x.id===unitId);if(!u) return;
+  const paid=getUnitTotalPaid(u);const debt=getUnitDebt(u);
+  const payments=u.payments||[];
+  document.getElementById('receiptContent').innerHTML=`<div class="receipt">
+    <div class="receipt-header">
+      <div style="font-size:18px;font-weight:800">${DB.buildingName||'مجتمع سپهر'}</div>
+      <div style="font-size:12px;color:#666;margin-top:4px">صورتحساب شارژ</div>
+    </div>
+    <div class="receipt-row"><span>واحد</span><span>${unitId}</span></div>
+    <div class="receipt-row"><span>مالک</span><span>${u.owner||'—'}</span></div>
+    <div class="receipt-row"><span>مستاجر</span><span>${u.tenant||'—'}</span></div>
+    <div class="receipt-row"><span>شارژ ماهانه</span><span>${numFmt(u.charge)} ت</span></div>
+    <div style="margin:8px 0;font-size:11px;font-weight:700;color:#555">سابقه پرداخت‌ها:</div>
+    ${payments.length===0?'<div style="text-align:center;color:#888;font-size:12px">پرداختی ثبت نشده</div>':
+      payments.map(p=>`<div class="receipt-row"><span>${p.month} ${p.year}</span><span style="color:green;font-weight:700">${numFmt(p.amount)} ت</span></div>`).join('')}
+    <div class="receipt-row" style="margin-top:6px"><span>جمع پرداختی</span><span style="color:green;font-weight:700">${numFmt(paid)} ت</span></div>
+    <div class="receipt-row receipt-total"><span>مانده بدهی</span><span>${numFmt(debt)} ت</span></div>
+    <div style="text-align:center;margin-top:12px;font-size:11px;color:#888">تاریخ صدور: ${getShamsiDate()}</div>
+  </div>`;
+  document.getElementById('receiptModal').style.display='flex';
+}
+
+// ============ WATER CALCULATOR ============
+function showWaterModal(){
+  const saved=DB.waterCalc||{};
+  document.getElementById('wTotalAmount').value=saved.totalAmount||'';
+  document.getElementById('wTotalM3').value=saved.totalM3||'';
+  // build unit grid
+  const grid=document.getElementById('wUnitsGrid');
+  grid.innerHTML=DB.units.map(u=>{
+    const prev=saved.units&&saved.units[u.id]?saved.units[u.id]:{m3:''};
+    return `<div class="wunit-card">
+      <div class="wunit-label">واحد ${u.id}</div>
+      ${u.owner?`<div style="font-size:10px;color:var(--text2);margin-bottom:3px">${u.owner}</div>`:''}
+      <input class="wunit-input" type="number" min="0" step="0.5" id="wUnit${u.id}" value="${prev.m3||''}" placeholder="م³" oninput="calcWater()">
+      <div class="wunit-amount" id="wUnitAmount${u.id}"></div>
+    </div>`;
+  }).join('');
+  document.getElementById('wRateDisplay').style.display='none';
+  document.getElementById('wTotalCheck').style.display='none';
+  document.getElementById('wResultTable').style.display='none';
+  document.getElementById('waterModal').style.display='flex';
+  // calc if already have data
+  if(saved.totalAmount&&saved.totalM3) calcWater();
+}
+
+function calcWater(){
+  const totalAmount=Number(document.getElementById('wTotalAmount').value)||0;
+  const totalM3=Number(document.getElementById('wTotalM3').value)||0;
+  if(!totalAmount||!totalM3){
+    document.getElementById('wRateDisplay').style.display='none';
+    return;
+  }
+  const ratePerM3=totalAmount/totalM3;
+  document.getElementById('wRateVal').textContent=numFmt(Math.round(ratePerM3));
+  document.getElementById('wRateDisplay').style.display='block';
+
+  const commonM3=Number(document.getElementById('wCommonM3').value)||0;
+  const unitCount=DB.units.length||1;
+  const commonPerUnit=commonM3/unitCount;
+  const commonSharePerUnit=Math.round(commonPerUnit*ratePerM3);
+
+  const cInfo=document.getElementById('wCommonInfo');
+  if(commonM3>0){
+    cInfo.style.display='block';
+    cInfo.textContent=`سهم مشاعات هر واحد: ${commonPerUnit.toFixed(2)} م³ = ${numFmt(commonSharePerUnit)} تومان`;
+  } else cInfo.style.display='none';
+
+  let usedM3=commonM3;
+  const results=[];
+  DB.units.forEach(u=>{
+    const m3=Number(document.getElementById('wUnit'+u.id)?.value)||0;
+    usedM3+=m3;
+    const privateShare=Math.round(m3*ratePerM3);
+    const totalShare=privateShare+commonSharePerUnit;
+    const amEl=document.getElementById('wUnitAmount'+u.id);
+    if(amEl) amEl.textContent=(m3>0||commonM3>0)?numFmt(totalShare)+' ت':'';
+    results.push({id:u.id,owner:u.owner||'',m3,commonM3:commonPerUnit,privateShare,commonShare:commonSharePerUnit,totalShare});
+  });
+
+  // total check
+  const checkEl=document.getElementById('wTotalCheck');
+  const privateM3=usedM3-commonM3;
+  const diff=totalM3-usedM3;
+  if(usedM3>0){
+    checkEl.style.display='block';
+    if(Math.abs(diff)<0.01){
+      checkEl.style.background='rgba(67,160,71,.12)';checkEl.style.border='1.5px solid var(--success)';checkEl.style.color='var(--success)';
+      checkEl.innerHTML=`✅ جمع مصرف = ${privateM3.toFixed(1)} م³ واحدها + ${commonM3} م³ مشاعات = ${usedM3.toFixed(1)} م³ تطابق کامل`;
+    } else if(diff>0){
+      checkEl.style.background='rgba(249,168,37,.1)';checkEl.style.border='1.5px solid var(--warn)';checkEl.style.color='var(--accent2)';
+      checkEl.innerHTML=`⚠️ جمع مصرف = ${usedM3.toFixed(1)} م³ | ${diff.toFixed(1)} م³ اختلاف باقی‌مانده`;
+    } else {
+      checkEl.style.background='rgba(229,57,53,.08)';checkEl.style.border='1.5px solid var(--danger)';checkEl.style.color='var(--danger)';
+      checkEl.innerHTML=`❌ جمع مصرف (${usedM3.toFixed(1)} م³) بیشتر از کل (${totalM3} م³) است`;
+    }
+  } else checkEl.style.display='none';
+
+  // result table
+  const active=results.filter(r=>r.m3>0||commonM3>0);
+  if(active.length>0){
+    document.getElementById('wResultTable').style.display='block';
+    document.getElementById('wResultContent').innerHTML=`
+      <table class="report-table">
+        <thead><tr><th>واحد</th><th>مالک</th><th>مصرف (م³)</th><th>مشاعات (م³)</th><th>جمع سهم (ت)</th></tr></thead>
+        <tbody>
+          ${results.map(r=>`<tr>
+            <td style="font-weight:700;color:var(--primary)">واحد ${r.id}</td>
+            <td>${r.owner||'—'}</td>
+            <td style="text-align:center">${r.m3||'۰'}</td>
+            <td style="text-align:center;color:#e65100">${r.commonM3>0?r.commonM3.toFixed(2):'—'}</td>
+            <td style="color:var(--danger);font-weight:700">${numFmt(r.totalShare)} ت</td>
+          </tr>`).join('')}
+          <tr style="background:rgba(57,73,171,.06)">
+            <td colspan="2" style="font-weight:800">جمع</td>
+            <td style="text-align:center;font-weight:700">${privateM3.toFixed(1)}</td>
+            <td style="text-align:center;font-weight:700;color:#e65100">${commonM3}</td>
+            <td style="font-weight:800;color:var(--danger)">${numFmt(results.reduce((s,r)=>s+r.totalShare,0))} ت</td>
+          </tr>
+        </tbody>
+      </table>`;
+  } else document.getElementById('wResultTable').style.display='none';
+}
+
+function saveWaterCalc(addToCharge){
+  const totalAmount=Number(document.getElementById('wTotalAmount').value)||0;
+  const totalM3=Number(document.getElementById('wTotalM3').value)||0;
+  if(!totalAmount||!totalM3){showToast('مبلغ و متراژ کل را وارد کنید');return;}
+  const commonM3=Number(document.getElementById('wCommonM3').value)||0;
+  const ratePerM3=totalAmount/totalM3;
+  const commonPerUnit=commonM3/(DB.units.length||1);
+  const commonSharePerUnit=Math.round(commonPerUnit*ratePerM3);
+  const unitsData={};
+  let addedCount=0;
+  DB.units.forEach(u=>{
+    const m3=Number(document.getElementById('wUnit'+u.id)?.value)||0;
+    const privateShare=Math.round(m3*ratePerM3);
+    const totalShare=privateShare+commonSharePerUnit;
+    unitsData[u.id]={m3,commonM3:commonPerUnit,privateShare,commonShare:commonSharePerUnit,totalShare};
+    if(addToCharge&&(m3>0||commonM3>0)){
+      u.charge=Number(u.charge||0)+totalShare;
+      addedCount++;
+    }
+  });
+  DB.waterCalc={totalAmount,totalM3,commonM3,ratePerM3:Math.round(ratePerM3),units:unitsData,date:getShamsiDate()};
+  // also log as an expense
+  if(!DB.expenses) DB.expenses=[];
+  const alreadyLogged=DB.expenses.find(e=>e.waterCalcId===DB.waterCalc.date);
+  if(!alreadyLogged){
+    DB.expenses.unshift({id:Date.now(),waterCalcId:DB.waterCalc.date,title:'قبض آب',amount:totalAmount,date:getShamsiDate(),desc:`${totalM3} م³ — نرخ ${numFmt(Math.round(ratePerM3))} ت/م³`,icon:'💧'});
+  }
+  saveDB();
+  closeModal('waterModal');
+  renderExpenses();
+  renderWaterSummary();
+  renderDashboard();
+  let msg='محاسبه قبض آب ذخیره شد ✅';
+  if(addToCharge&&addedCount>0) msg+=` | ${addedCount} واحد به شارژشان اضافه شد`;
+  showToast(msg);
+}
+
+function renderWaterSummary(){
+  const w=DB.waterCalc;
+  const panel=document.getElementById('waterSummaryPanel');
+  if(!w||!w.totalAmount){panel.style.display='none';return;}
+  panel.style.display='block';
+  const units=DB.units;
+  const rows=units.map(u=>{
+    const d=w.units&&w.units[u.id]?w.units[u.id]:{m3:0,totalShare:0,commonShare:0};
+    if(!d.m3&&!d.commonShare) return '';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span><b>واحد ${u.id}</b>${u.owner?' — '+u.owner:''}</span>
+      <span style="display:flex;gap:10px;align-items:center">
+        ${d.m3>0?`<span style="color:var(--text2)">${d.m3} م³</span>`:''}
+        ${d.commonShare>0?`<span style="color:#e65100;font-size:11px">+مشاعات</span>`:''}
+        <span style="color:var(--danger);font-weight:700">${numFmt(d.totalShare||0)} ت</span>
+      </span>
+    </div>`;
+  }).join('');
+  document.getElementById('waterSummaryContent').innerHTML=`
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+      <span style="font-size:13px">📅 <b>${w.date}</b></span>
+      <span style="font-size:13px">💰 <b>${numFmt(w.totalAmount)} ت</b></span>
+      <span style="font-size:13px">📊 <b>${w.totalM3} م³ کل</b></span>
+      ${w.commonM3>0?`<span style="font-size:13px;color:#e65100">🏛️ <b>${w.commonM3} م³ مشاعات</b></span>`:''}
+      <span style="font-size:13px">⚡ <b>${numFmt(w.ratePerM3)} ت/م³</b></span>
+    </div>
+    ${rows}`;
+}
+
+function clearWaterCalc(){
+  if(!confirm('محاسبه قبض آب حذف شود؟')) return;
+  delete DB.waterCalc;
+  saveDB();renderWaterSummary();showToast('محاسبه قبض آب حذف شد');
+}
+
+// ============ EXPENSES ============
+function toggleCustomExp(sel){
+  document.getElementById('expTitleCustom').style.display=sel.value==='custom'?'block':'none';
+}
+
+function showAddExpenseModal(){
+  document.getElementById('expAmount').value='';
+  document.getElementById('expDate').value=getShamsiDate();
+  document.getElementById('expDesc').value='';
+  document.getElementById('expTitle').selectedIndex=0;
+  document.getElementById('expTitleCustom').style.display='none';
+  document.getElementById('expenseModal').style.display='flex';
+}
+
+const expIcons={'قبض آب':'💧','قبض گاز':'🔥','قبض برق مشترک':'💡','هزینه نظافت':'🧹','تعمیرات و نگهداری':'🔧','حقوق سرایدار':'👷','باغبانی':'🌱','بیمه ساختمان':'🛡️','هزینه آسانسور':'🛗'};
+
+function saveExpense(){
+  const ts=document.getElementById('expTitle').value;
+  const title=ts==='custom'?document.getElementById('expTitleCustom').value:ts;
+  const amount=Number(document.getElementById('expAmount').value);
+  const date=document.getElementById('expDate').value;
+  const desc=document.getElementById('expDesc').value;
+  if(!title||!amount){showToast('عنوان و مبلغ الزامی است');return;}
+  if(!DB.expenses) DB.expenses=[];
+  DB.expenses.unshift({id:Date.now(),title,amount,date,desc,icon:expIcons[title]||'💰'});
+  saveDB();closeModal('expenseModal');renderExpenses();renderDashboard();showToast('هزینه ثبت شد');
+}
+
+function renderExpenses(){
+  const grid=document.getElementById('expGrid');
+  if(!DB.expenses||DB.expenses.length===0){
+    grid.innerHTML='<div style="text-align:center;padding:40px;color:var(--text2)">هیچ هزینه‌ای ثبت نشده است</div>';return;
+  }
+  const total=DB.expenses.reduce((s,e)=>s+Number(e.amount||0),0);
+  grid.innerHTML=`<div class="card card-sm" style="display:flex;justify-content:space-between;align-items:center">
+    <span style="font-weight:700">جمع کل هزینه‌ها</span>
+    <span style="font-size:17px;font-weight:800;color:var(--danger)">${numFmt(total)} تومان</span>
+  </div>`+DB.expenses.map((e,i)=>`
+    <div class="exp-card">
+      <div class="exp-icon">${e.icon||'💰'}</div>
+      <div class="exp-info">
+        <div class="exp-title">${e.title}</div>
+        <div class="exp-meta">${e.date||''}${e.desc?' — '+e.desc:''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <span class="exp-amount">${numFmt(e.amount)} ت</span>
+        <button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:18px" onclick="deleteExpense(${i})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function deleteExpense(i){DB.expenses.splice(i,1);saveDB();renderExpenses();renderDashboard();showToast('هزینه حذف شد');}
+
+// ============ REPORT ============
+function renderReport(){
+  const units=DB.units||[];
+  const expenses=DB.expenses||[];
+  const totalIncome=units.reduce((s,u)=>s+getUnitTotalPaid(u),0);
+  const totalExpense=expenses.reduce((s,e)=>s+Number(e.amount||0),0);
+  const fund=totalIncome-totalExpense;
+  const debtTotal=units.reduce((s,u)=>s+getUnitDebt(u),0);
+
+  document.getElementById('reportBody').innerHTML=`
+    <div style="text-align:center;margin-bottom:24px;padding-bottom:20px;border-bottom:2px solid var(--border)">
+      <div style="font-size:24px;font-weight:800">${DB.buildingName||'مجتمع سپهر'}</div>
+      <div style="font-size:14px;color:var(--text2);margin-top:4px">گزارش جامع مدیریت ساختمان</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:2px">تاریخ: ${getShamsiDate()} — نسخه: ${DB.version}</div>
+    </div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:12px">🏠 وضعیت واحدها</div>
+    <table class="report-table">
+      <thead><tr><th>واحد</th><th>مالک</th><th>مستاجر</th><th>شارژ</th><th>پرداختی</th><th>بدهی</th><th>وضعیت</th></tr></thead>
+      <tbody>
+        ${units.map(u=>{
+          const paid=getUnitTotalPaid(u);const debt=getUnitDebt(u);
+          return `<tr>
+            <td style="font-weight:700;color:var(--primary)">واحد ${u.id}</td>
+            <td>${u.owner||'—'}</td>
+            <td>${u.tenant||'—'}</td>
+            <td>${numFmt(u.charge)}</td>
+            <td class="paid-cell">${numFmt(paid)}</td>
+            <td class="${debt>0?'amount':''}">${numFmt(debt)}</td>
+            <td style="color:${debt>0?'#e53935':'#43a047'};font-weight:700">${debt>0?'بدهکار':'تسویه'}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <div style="font-size:15px;font-weight:800;margin:20px 0 12px">💰 هزینه‌ها</div>
+    <table class="report-table">
+      <thead><tr><th>تاریخ</th><th>عنوان هزینه</th><th>مبلغ (تومان)</th><th>توضیحات</th></tr></thead>
+      <tbody>
+        ${expenses.length===0?'<tr><td colspan="4" style="text-align:center;color:#888;padding:16px">هیچ هزینه‌ای ثبت نشده</td></tr>':
+          expenses.map(e=>`<tr><td>${e.date||'—'}</td><td>${e.title}</td><td class="amount">${numFmt(e.amount)}</td><td>${e.desc||'—'}</td></tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="report-footer-boxes">
+      <div class="rs-box"><div class="rs-val" style="color:var(--success)">${numFmt(totalIncome)}</div><div class="rs-lbl">جمع دریافتی</div></div>
+      <div class="rs-box"><div class="rs-val" style="color:var(--danger)">${numFmt(totalExpense)}</div><div class="rs-lbl">جمع هزینه</div></div>
+      <div class="rs-box"><div class="rs-val" style="color:var(--danger)">${numFmt(debtTotal)}</div><div class="rs-lbl">جمع بدهی‌ها</div></div>
+      <div class="rs-box"><div class="rs-val" style="color:${fund>=0?'var(--primary)':'var(--danger)'}">${numFmt(fund)}</div><div class="rs-lbl">موجودی صندوق</div></div>
+    </div>`;
+}
+
+function toggleStatements(){
+  const box=document.getElementById('statementsBody');
+  const btn=document.getElementById('toggleStatementsBtn');
+  if(box.style.display==='none'){
+    renderStatements();
+    box.style.display='block';
+    btn.textContent='🙈 پنهان کردن صورتحساب‌ها';
+  } else {
+    box.style.display='none';
+    btn.textContent='🧾 صورتحساب کلی واحدها';
+  }
+}
+
+function renderStatements(){
+  const MONTHS=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  const units=[...DB.units].sort((a,b)=>a.id-b.id);
+  const box=document.getElementById('statementsBody');
+  let html=`<div style="text-align:center;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--border)">
+    <div style="font-size:20px;font-weight:800">${DB.buildingName||'مجتمع سپهر'}</div>
+    <div style="font-size:13px;color:var(--text2);margin-top:4px">صورتحساب ماهانه واحدها</div>
+    <div style="font-size:12px;color:var(--text2)">تاریخ صدور: ${getShamsiDate()}</div>
+  </div>`;
+  html+=units.map(u=>{
+    const payments=u.payments||[];
+    const charge=Number(u.charge||0);
+    const debt=getUnitDebt(u);
+    const byMonth={};
+    payments.forEach(p=>{
+      const key=`${p.year||''}-${MONTHS.indexOf(p.month||'')}`;
+      if(!byMonth[key]) byMonth[key]={year:p.year||'',month:p.month||'',idx:MONTHS.indexOf(p.month||''),payments:[]};
+      byMonth[key].payments.push(p);
+    });
+    const sortedKeys=Object.keys(byMonth).sort((a,b)=>{
+      const [ay,ai]=a.split('-');const [by2,bi]=b.split('-');
+      return (Number(ay)*12+Number(ai))-(Number(by2)*12+Number(bi));
+    });
+    let carryDebt=0;
+    const monthRows=sortedKeys.map(key=>{
+      const g=byMonth[key];
+      const monthPaid=g.payments.reduce((s,p)=>s+Number(p.amount||0),0);
+      const openingDebt=carryDebt;
+      const totalDue=charge+openingDebt;
+      const closingDebt=Math.max(0,totalDue-monthPaid);
+      carryDebt=closingDebt;
+      return `<tr>
+        <td style="font-weight:600">${g.month} ${g.year}</td>
+        <td style="text-align:center">${numFmt(charge)}</td>
+        <td style="text-align:center;color:#e65100">${openingDebt>0?numFmt(openingDebt):'—'}</td>
+        <td style="text-align:center;font-weight:700">${numFmt(totalDue)}</td>
+        <td style="text-align:center;color:var(--success);font-weight:700">${numFmt(monthPaid)}</td>
+        <td style="text-align:center;color:${closingDebt>0?'var(--danger)':'var(--success)'};font-weight:700">${numFmt(closingDebt)}</td>
+      </tr>`;
+    }).join('');
+    const monthTable=sortedKeys.length>0?`
+      <table class="report-table" style="margin-bottom:10px;font-size:12px">
+        <thead><tr><th>ماه</th><th>شارژ</th><th>بدهی قبلی</th><th>جمع</th><th>پرداختی</th><th>مانده</th></tr></thead>
+        <tbody>${monthRows}</tbody>
+      </table>`:'<div style="font-size:12px;color:#888;margin-bottom:10px">پرداختی ثبت نشده</div>';
+    return `<div class="statement-block">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-size:16px;font-weight:800;color:var(--primary)">واحد ${u.id}</div>
+        <span style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px;background:${debt>0?'#ffebee':'#e8f5e9'};color:${debt>0?'#e53935':'#43a047'}">${debt>0?'بدهکار':'تسویه'}</span>
+      </div>
+      <table class="report-table" style="margin-bottom:10px;font-size:12px">
+        <tr><td style="width:20%;color:var(--text2)">مالک</td><td>${u.owner||'—'}</td><td style="width:20%;color:var(--text2)">مستاجر</td><td>${u.tenant||'—'}</td></tr>
+        <tr><td style="color:var(--text2)">تماس</td><td>${u.phone||'—'}</td><td style="color:var(--text2)">شارژ ماهانه</td><td style="font-weight:700">${numFmt(charge)} تومان</td></tr>
+      </table>
+      ${monthTable}
+      <div style="display:flex;gap:16px;justify-content:flex-end;font-size:13px;font-weight:700;padding-top:8px;border-top:2px solid var(--border)">
+        <span>جمع پرداختی: <span style="color:var(--success)">${numFmt(getUnitTotalPaid(u))} ت</span></span>
+        <span>بدهی انتقالی به دوره بعد: <span style="color:${debt>0?'var(--danger)':'var(--success)'}">${numFmt(debt)} ت</span></span>
+      </div>
+    </div>`;
+  }).join('');
+  box.innerHTML=html;
+}
+
+// ============ SETTINGS ============
+const SETTINGS_PASSWORD='Alireza3232';
+let settingsUnlocked=false;
+
+function checkSettingsPassword(){
+  const input=document.getElementById('settingsPassInput').value;
+  if(input===SETTINGS_PASSWORD){
+    settingsUnlocked=true;
+    document.getElementById('settingsLock').style.display='none';
+    document.getElementById('settingsContent').style.display='block';
+    document.getElementById('settingsPassError').style.display='none';
+    document.getElementById('settingsPassInput').value='';
+    loadSettingsForm();
+    showToast('ورود موفق ✅');
+  } else {
+    document.getElementById('settingsPassError').style.display='block';
+    document.getElementById('settingsPassInput').value='';
+  }
+}
+
+function lockSettings(){
+  settingsUnlocked=false;
+  document.getElementById('settingsLock').style.display='block';
+  document.getElementById('settingsContent').style.display='none';
+  showToast('بخش مدیریت قفل شد 🔒');
+}
+
+// ============ SETTINGS ============
+function loadSettingsForm(){
+  document.getElementById('setBuildingName').value=DB.buildingName||'';
+  document.getElementById('setDefaultCharge').value=DB.defaultCharge||500000;
+  document.getElementById('setUnitCount').value=DB.unitCount||15;
+  document.getElementById('setFundAdj').value='';
+  const cur=document.getElementById('fundAdjCurrent');
+  if(cur) cur.textContent=`تعدیل فعلی صندوق: ${numFmt(DB.fundAdjustment||0)} تومان`;
+}
+
+function saveFundAdjustment(){
+  const adj=Number(document.getElementById('setFundAdj').value);
+  DB.fundAdjustment=(Number(DB.fundAdjustment||0))+adj;
+  saveDB();renderDashboard();loadSettingsForm();
+  showToast(`صندوق ${adj>=0?'افزایش':'کاهش'} یافت: ${numFmt(Math.abs(adj))} تومان ✅`);
+}
+
+function handleLogoUpload(input){
+  const file=input.files[0];if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{DB.logo=e.target.result;refreshLogos();showToast('لوگو بارگذاری شد');};
+  reader.readAsDataURL(file);
+}
+
+function saveBuildingInfo(){
+  DB.buildingName=document.getElementById('setBuildingName').value||'مجتمع سپهر';
+  saveDB();refreshLogos();showToast('اطلاعات مجتمع ذخیره شد ✅');
+}
+
+function saveUnitSettings(){
+  const charge=Number(document.getElementById('setDefaultCharge').value)||500000;
+  const count=Math.min(30,Math.max(1,Number(document.getElementById('setUnitCount').value)||15));
+  DB.defaultCharge=charge;
+  const old=DB.units.length;
+  if(count>old){
+    for(let i=old+1;i<=count;i++) DB.units.push({id:i,owner:'',tenant:'',phone:'',charge:DB.defaultCharge,payments:[]});
+  } else if(count<old){
+    DB.units=DB.units.slice(0,count);
+  }
+  DB.unitCount=count;saveDB();showToast(`تنظیمات ذخیره شد — ${count} واحد ✅`);
+}
+
+function exportBackup(){
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`backup-${(DB.buildingName||'building').replace(/\s/g,'-')}-${getShamsiDate().replace(/\//g,'-')}.json`;
+  a.click();URL.revokeObjectURL(url);showToast('فایل Backup دانلود شد');
+}
+
+function exportHTML(){
+  // Embed current DB into the HTML file for self-contained save
+  const htmlContent=document.documentElement.outerHTML.replace(
+    /localStorage\.setItem\([^)]+\);?/g,''
+  );
+  // Inject current DB into a script tag at the start of JS
+  const injected=htmlContent.replace(
+    '// ============ DATA ============',
+    `// ============ DATA ============\n// Auto-saved data\ntry{if(!localStorage.getItem('buildingDB_v2'))localStorage.setItem('buildingDB_v2',${JSON.stringify(JSON.stringify(DB))});}catch(e){}`
+  );
+  const blob=new Blob([injected],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`${(DB.buildingName||'building').replace(/\s/g,'-')}-v${DB.version}-${getShamsiDate().replace(/\//g,'-')}.html`;
+  a.click();URL.revokeObjectURL(url);
+  showToast('فایل HTML ذخیره شد ✅ — می‌توانید در مرورگر باز کنید');
+}
+
+// SMS Receipt - stores current receipt unit context
+let currentReceiptUnitId=null;
+let currentReceiptPayment=null;
+
+function sendSmsReceipt(){
+  const u=DB.units.find(x=>x.id===currentReceiptUnitId);
+  const phone=u&&u.phone?u.phone.replace(/\D/g,''):'';
+  const pay=currentReceiptPayment;
+  if(!phone){showToast('شماره تماس این واحد ثبت نشده است');return;}
+
+  const buildingName=DB.buildingName||'مجتمع سپهر';
+  let smsText='';
+  if(pay){
+    smsText=`${buildingName}\n✅ رسید پرداخت شارژ\nواحد ${currentReceiptUnitId}\n${u.owner?'مالک: '+u.owner+'\n':''}ماه: ${pay.month} ${pay.year}\nمبلغ: ${numFmt(pay.amount)} تومان\nتاریخ: ${pay.date}\n🙏 با تشکر از پرداخت به موقع شما`;
+  } else {
+    const debt=getUnitDebt(u);
+    const paid=getUnitTotalPaid(u);
+    smsText=`${buildingName}\n🧾 صورتحساب شارژ\nواحد ${currentReceiptUnitId}\n${u.owner?'مالک: '+u.owner+'\n':''}شارژ: ${numFmt(u.charge)} تومان\nپرداختی: ${numFmt(paid)} تومان\nمانده: ${numFmt(debt)} تومان\nتاریخ: ${getShamsiDate()}`;
+  }
+
+  const preview=document.getElementById('smsPreview');
+  preview.style.display='block';
+  preview.innerHTML=`<div style="font-weight:700;margin-bottom:6px;color:var(--success)">📱 پیش‌نمایش SMS — ارسال به: ${phone}</div><div style="white-space:pre-line;font-size:12px">${smsText}</div>
+  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+    <a href="sms:${phone}?body=${encodeURIComponent(smsText)}" class="btn btn-success btn-sm">📤 باز کردن در پیام‌رسان</a>
+    <button class="btn btn-outline btn-sm" onclick="copySmsText()">📋 کپی متن</button>
+  </div>`;
+  window._smsText=smsText;
+}
+
+function copySmsText(){
+  if(navigator.clipboard&&window._smsText){
+    navigator.clipboard.writeText(window._smsText).then(()=>showToast('متن پیامک کپی شد ✅'));
+  }
+}
+
+function importBackupFn(input){
+  const file=input.files[0];if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{DB=JSON.parse(e.target.result);localStorage.setItem('buildingDB_v2',JSON.stringify(DB));refreshLogos();renderDashboard();showToast('بازیابی موفق ✅');}
+    catch(err){showToast('فایل نامعتبر است');}
+  };reader.readAsText(file);
+  input.value='';
+}
+
+function settleAllDebts(){
+  if(!confirm('تسویه کامل همه بدهی‌ها؟')) return;
+  const n=new Date();const s=toShamsi(n.getFullYear(),n.getMonth()+1,n.getDate());
+  const months=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  DB.units.forEach(u=>{
+    const debt=getUnitDebt(u);
+    if(debt>0){if(!u.payments) u.payments=[];u.payments.push({month:months[s.m-1],year:s.y,amount:debt,note:'تسویه کل بدهی',date:getShamsiDate(),id:Date.now()});}
+  });
+  saveDB();renderUnits();renderDashboard();showToast('همه بدهی‌ها تسویه شدند ✅');
+}
+
+function clearAllData(){
+  if(!confirm('آیا مطمئنید؟ این عمل غیرقابل برگشت است!')) return;
+  if(!confirm('⚠️ تمام اطلاعات واحدها و هزینه‌ها پاک می‌شود!')) return;
+  DB={version:'1.0.1',updateDate:getShamsiDate(),buildingName:'مجتمع سپهر',logo:'',defaultCharge:500000,unitCount:15,units:[],expenses:[]};
+  initUnits();saveDB();refreshLogos();renderDashboard();showToast('اطلاعات پاک شد');
+}
+
+// ============ UTILS ============
+function closeModal(id){document.getElementById(id).style.display='none';}
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded',()=>{
+  loadDB();refreshLogos();updateClock();updateClockMeta();
+  setInterval(updateClock,1000);
+  showPage('dashboard');
+  setTimeout(renderWaterSummary,100);
+});
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.log('SW failed:', err));
+  });
+}
+</script>
+</body>
+</html>
